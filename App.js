@@ -2,7 +2,7 @@ import { StatusBar } from 'expo-status-bar';
 import { useState, useEffect } from 'react';
 import { FlatList, StyleSheet, Text, TextInput, View, Button } from 'react-native';
 import { initializeApp } from'firebase/app';
-import { firebase, getDatabase, push, ref, onValue, remove } from'firebase/database';
+import { firebase, getDatabase, push, ref, onValue, remove, database } from'firebase/database';
 
 
 export default function App() {
@@ -28,12 +28,14 @@ const [product, setProduct] = useState('');
 const [amount, setAmount] = useState('');
 const [items, setItems] = useState([]);
 
+  
 const saveProduct = () => {
   push(
     ref(database, 'items/'),
     { 'product': product, 'amount': amount }
   );
 }
+
 
 useEffect(() => {
   const itemsRef = ref(database, 'items/');
@@ -46,13 +48,12 @@ useEffect(() => {
 
 }, []);
 
-const deleteProduct = () => {
+const deleteProduct = (item) => {
   remove(
-    ref(database, 'items/'.child(key).remove()),
-    { 'product': product, 'amount': amount }
+    ref(database, 'items/' + item.Key),
   )
-}
 
+  }
   
 
 const listSeparator = () => {
@@ -97,15 +98,16 @@ const listSeparator = () => {
 
       <FlatList
         style={ styles.list }
-        keyExtractor={ (item , index) => 'key' + index }
+        keyExtractor={ item => item.Key }
         renderItem={ ({ item }) => 
         <View style={ styles.listcontainer }>
           <Text>
             { item.product }
+            
             <Text>, </Text>
             { item.amount }
           </Text>
-          <Text style={{ color: '#0000ff' }}onPress={() => deleteProduct }>Delete</Text>
+          <Text style={{ color: '#0000ff' }}onPress={() => deleteProduct(items.Key) }>Delete</Text>
             </View> }
       data={ items }
       ItemSeparatorComponent={ listSeparator }
