@@ -28,6 +28,21 @@ const [product, setProduct] = useState('');
 const [amount, setAmount] = useState('');
 const [items, setItems] = useState([]);
 
+useEffect(() => {
+  const itemsRef = ref(database, 'items/');
+  onValue(itemsRef, (snapshot) => {
+    const data = snapshot.val();
+    const items = data ? Object.keys(data).map(key => ({key, ...data[key]})) : [];
+    setItems(items);
+    console.log((Object.keys(data)))
+    console.log((Object.values(data)))
+  })
+ 
+
+}, []);
+
+
+
   
 const saveProduct = () => {
   push(
@@ -37,16 +52,7 @@ const saveProduct = () => {
 }
 
 
-useEffect(() => {
-  const itemsRef = ref(database, 'items/');
-  onValue(itemsRef, (snapshot) => {
-    const data = snapshot.val();
-    setItems(Object.values(data));
-    console.log((Object.values(data)))
-  })
- 
 
-}, []);
 
 const deleteProduct = (item) => {
   remove(
@@ -54,7 +60,6 @@ const deleteProduct = (item) => {
   )
 
   }
-  
 
 const listSeparator = () => {
   return(
@@ -107,7 +112,7 @@ const listSeparator = () => {
             <Text>, </Text>
             { item.amount }
           </Text>
-          <Text style={{ color: '#0000ff' }}onPress={() => deleteProduct(items.Key) }>Delete</Text>
+          <Text style={{ color: '#0000ff' }}onPress={() => deleteProduct(item.key) }>Delete</Text>
             </View> }
       data={ items }
       ItemSeparatorComponent={ listSeparator }
